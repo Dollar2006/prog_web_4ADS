@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'VT323', monospace;
+}
+
+body{
+    background-color: #0d1109;
+    color: #14ff00;
+}
+
+nav{
+    width: 100vw;
+}
+.navbar{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    list-style: none;
+    padding: 20px 0;
+    border-bottom: 2px solid #15ff00a0;
+    box-shadow: 0 4px 4px rgba(20, 255, 0, 0.2);
+}
+.navbar a{
+    text-decoration: none;
+    color: #14ff00;
+}
+
+.banner{
+    min-height: 70vh;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), 
+        url(../img/banner_bg.png);
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.banner h1{
+    font-size: 4em;
+}
+
+
+
+
