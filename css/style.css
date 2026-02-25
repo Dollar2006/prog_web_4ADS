@@ -10,6 +10,7 @@
 body{
     background-color: #0d1109;
     color: #14ff00;
+    overflow-x: hidden;
 }
 
 nav{
@@ -45,5 +46,117 @@ nav{
 }
 
 
+.cards-main-content{
+    width: 100%;
+    max-width: 1200px; 
+    margin: 7em auto 3em auto; 
+    padding: 0 20px; 
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2em; 
+}
+
+.card{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #14ff00;
+    padding: 2.5em 1.5em; /* Respiro interno essencial! */
+    background-color: rgba(20, 255, 0, 0.02); /* Fundo levemente esverdeado */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Animação suave */
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(20, 255, 0, 0.2);
+}
+.card h4 {
+    font-size: 1.8em;
+    margin: 0.5em 0;
+}
+
+.card p {
+    font-size: 1.2em;
+    margin-bottom: 1.5em;
+    flex-grow: 1; /* Faz o botão sempre ficar alinhado no fundo, mesmo se o texto variar */
+}
+.icon {
+    width: 120px; /* Largura fixa e previsível */
+    height: 120px; /* Altura igual para manter o quadrado */
+    object-fit: contain; /* ESSENCIAL: Garante que a imagem não distorça nunca */
+    margin-bottom: 1em;
+    filter: drop-shadow(0 0 5px var(--neon-green-dim)); /* Toque extra pro tema hacker */
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 25px;
+    border: 1px solid #14ff00;
+    background-color: transparent;
+    color: #14ff00;
+    text-decoration: none;
+    font-size: 1.2em;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #14ff00;
+    color: #0d1109;
+}
+
+.main-footer {
+    background-color: #050704; /* Um tom ainda mais escuro que o body para dar profundidade */
+    border-top: 2px solid rgba(20, 255, 0, 0.1);
+    margin-top: 5em;
+    padding: 3em 0 1em 0;
+    color: #14ff00;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    /* Responsividade: 1 coluna no celular, 3 no desktop */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2em;
+    padding: 0 20px;
+}
+
+.footer-column h3, .footer-column h4 {
+    margin-bottom: 1.2em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.footer-column ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-column ul li {
+    margin-bottom: 0.8em;
+    font-size: 1.1em;
+}
+
+.footer-column a {
+    color: #14ff00;
+    text-decoration: none;
+    transition: opacity 0.3s;
+}
+
+.footer-column a:hover {
+    text-decoration: underline;
+    opacity: 0.8;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 3em;
+    padding-top: 1.5em;
+    border-top: 1px solid rgba(20, 255, 0, 0.1);
+    font-size: 0.9em;
+    opacity: 0.6;
+}
 
 
