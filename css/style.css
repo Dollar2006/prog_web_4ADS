@@ -81,11 +81,16 @@ nav{
     flex-grow: 1; /* Faz o botão sempre ficar alinhado no fundo, mesmo se o texto variar */
 }
 .icon {
-    width: 120px; /* Largura fixa e previsível */
-    height: 120px; /* Altura igual para manter o quadrado */
+    width: 150px; /* Largura fixa e previsível */
+    height: 150px; /* Altura igual para manter o quadrado */
     object-fit: contain; /* ESSENCIAL: Garante que a imagem não distorça nunca */
     margin-bottom: 1em;
+    border-radius: 10%;
     filter: drop-shadow(0 0 5px var(--neon-green-dim)); /* Toque extra pro tema hacker */
+}
+.entrenova-icon{
+    background-color: #8fa579;
+    padding: 20px;
 }
 
 .btn {
@@ -160,3 +165,272 @@ nav{
 }
 
 
+/* --- Seções de Conteúdo Intercalado (Sobre) --- */
+
+.about-section {
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+    padding: 80px 10%;
+    border-bottom: 1px dashed #14ff00;
+}
+
+/* Inverte a ordem em seletores pares (2ª seção, 4ª seção, etc) */
+.about-section:nth-child(even) {
+    flex-direction: row-reverse;
+    
+}
+
+
+
+.about-image {
+    width: 15%;
+    height: 5%;
+    border-radius: 1em;
+    border: var(--border-style);
+    padding: 5px;
+    background: rgba(20, 255, 0, 0.05);
+    box-shadow: #14ff00;
+}
+
+
+.about-content h2 {
+    font-size: 2.8rem;
+    color: #14ff00;
+    margin-bottom: 1.5rem;
+    text-shadow: #14ff00;
+}
+
+.about-content p {
+    font-size: 1.3rem;
+    margin-bottom: 1.2rem;
+    line-height: 1.4;
+}
+
+/* Responsividade: Empilha os elementos em telas menores */
+@media (max-width: 992px) {
+    .about-section, 
+    .about-section:nth-child(even) {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px 5%;
+    }
+
+    .about-image {
+        width: 100%;
+        max-width: 500px;
+    }
+}
+
+.hero-gear-svg {
+    fill: none;
+    stroke: #14ff00;
+    stroke-width: 2px;
+    max-width: 300px;
+    width: 100%;
+    height: auto;
+}
+
+.hero-gear-center-text {
+    font-family: 'VT323', monospace;
+    font-size: 45px;
+    fill: #14ff00;
+    stroke: none;
+    text-anchor: middle;
+}
+
+.inner-ring-fill {
+    fill: rgba(20, 255, 0, 0.1);
+}
+
+/* Ajustes de Seção e Logs */
+.system-logs-section {
+    padding-top: 40px;
+    padding-bottom: 20px;
+    border-bottom: none;
+}
+
+.error-text {
+    color: red;
+    text-shadow: 0 0 5px red;
+}
+
+/* Estilo para o Título de Serviços */
+.services-header {
+    text-align: center;
+    padding-top: 40px;
+}
+
+.services-title {
+    text-shadow: 0 0 10px #14ff00;
+}
+
+.btn-status {
+    cursor: default;
+}
+
+/* --- Novo Design de Serviços (Terminal Style) --- */
+
+.system-status {
+    color: #14ff00;
+    opacity: 0.7;
+    margin-bottom: 2rem;
+    font-size: 1.2rem;
+}
+
+.services-terminal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 0 10% 5rem 10%;
+}
+
+.service-module {
+    background: rgba(20, 255, 0, 0.03);
+    border: 1px solid rgba(20, 255, 0, 0.3);
+    position: relative;
+    padding: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+/* Detalhe de canto de terminal */
+.service-module::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 10px; height: 10px;
+    border-top: 3px solid #14ff00;
+    border-left: 3px solid #14ff00;
+}
+
+.service-module:hover {
+    background: rgba(20, 255, 0, 0.08);
+    border-color: #14ff00;
+    box-shadow: 0 0 20px rgba(20, 255, 0, 0.15);
+    transform: scale(1.02);
+}
+
+.module-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(20, 255, 0, 0.2);
+    padding-bottom: 5px;
+}
+
+.module-status.active {
+    background: #14ff00;
+    color: #0d1109;
+    padding: 0 5px;
+}
+
+.module-icon {
+    width: 80px;
+    height: 80px;
+    filter: grayscale(1) sepia(1) hue-rotate(60deg) brightness(1.2);
+    margin-bottom: 1rem;
+}
+
+.service-module h4 {
+    color: #14ff00;
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
+}
+
+.module-btn {
+    display: block;
+    margin-top: 1.5rem;
+    padding: 8px;
+    border: 1px solid #14ff00;
+    text-align: center;
+    color: #14ff00;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.module-btn:hover:not(.locked) {
+    background: #14ff00;
+    color: #0d1109;
+}
+
+
+/* Responsividade extra para o grid */
+@media (max-width: 600px) {
+    .services-terminal-grid {
+        padding: 0 5% 5rem 5%;
+    }
+}
+
+/* --- Seção de Contato (Terminal Input) --- */
+
+.contact-terminal {
+    display: flex;
+    justify-content: center;
+    padding: 0 10% 5rem 10%;
+}
+
+.terminal-window {
+    width: 100%;
+    max-width: 600px;
+    border: 1px solid #14ff00;
+    background: rgba(20, 255, 0, 0.02);
+    box-shadow: 0 0 15px rgba(20, 255, 0, 0.1);
+}
+
+.terminal-header {
+    background: #14ff00;
+    color: #0d1109;
+    padding: 5px 15px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.terminal-form {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input-group label {
+    font-size: 1.2rem;
+}
+
+.terminal-form input, 
+.terminal-form select, 
+.terminal-form textarea {
+    background: transparent;
+    border: 1px solid rgba(20, 255, 0, 0.3);
+    padding: 10px;
+    color: #14ff00;
+    font-family: 'VT323', monospace;
+    font-size: 1.1rem;
+}
+
+.terminal-form input:focus, 
+.terminal-form textarea:focus {
+    outline: none;
+    border-color: #14ff00;
+    background: rgba(20, 255, 0, 0.05);
+}
+
+.btn-transmit {
+    width: 100%;
+    margin-top: 1rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+/* Ajuste para o select não ficar com seta padrão branca */
+select option {
+    background-color: #0d1109;
+    color: #14ff00;
+}
