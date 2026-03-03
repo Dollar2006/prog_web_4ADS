@@ -434,3 +434,23 @@ select option {
     background-color: #0d1109;
     color: #14ff00;
 }
+
+/* Estilização dos Ícones SVG nos Módulos de Serviço */
+.module-icon-svg {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 1rem;
+    fill: none;
+    stroke: #14ff00;
+    stroke-width: 1.5px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 5px rgba(20, 255, 0, 0.4)); /* Brilho neon nos ícones */
+    transition: transform 0.3s ease;
+}
+
+.service-module:hover .module-icon-svg {
+    transform: scale(1.1);
+    stroke-width: 2px;
+    filter: drop-shadow(0 0 8px var(--primary-color));
+}
