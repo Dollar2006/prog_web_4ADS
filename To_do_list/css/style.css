@@ -1,0 +1,136 @@
+:root {
+
+    --bg-body: #f9f9fb;
+    --bg-card: #ffffff;
+    --bg-container: #ffffff;
+    
+    /* Cores de Marca e Interação */
+    --primary-color: #6c5ce7; /* Roxo vibrante do card e botão */
+    --primary-hover: #5849c4;
+    --accent-color: #a29bfe;
+    
+    /* Texto e Bordas */
+    --text-main: #2d3436;
+    --text-secondary: #636e72;
+    --text-on-primary: #ffffff;
+    --border-default: #e1e1e1;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    /* Prioridades (Semânticas) */
+    --priority-high: #ff7675;   /* Vermelho suave */
+    --priority-medium: #fdcb6e; /* Amarelo/Laranja */
+    --priority-low: #55efc4;    /* Verde menta */
+}
+
+body.dark-mode {
+    --bg-body: #0a0b1e;      /* Azul marinho profundo */
+    --bg-card: #161832;      /* Tom levemente mais claro para cards */
+    --bg-container: #0a0b1e;
+    
+    /* Cores de Marca e Interação */
+    --primary-color: #4834d4;
+    --primary-hover: #686de0;
+    
+    /* Texto e Bordas */
+    --text-main: #ffffff;
+    --text-secondary: #a4a9be;
+    --border-default: #2d3436;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    color: var(--text-main);
+}
+
+body {
+    padding: 20px;
+    background-color: var(--bg-body);
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Flexbox para inputs responsivos */
+#task-form, 
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#task-form > *, 
+.filters > * {
+    flex: 1 1 150px;
+    padding: 10px;
+    border: 1px solid var(--border-default);
+    border-radius: 4px;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: var(--primary-hover);
+}
+
+/* Grid para os cards das tarefas */
+.task-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+.task-card {
+    background: var(--bg-card);
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 2px 5px var(--shadow-light);
+}
+
+/* Identificadores visuais */
+.completed {
+    opacity: 0.6;
+    text-decoration: line-through;
+}
+
+.priority-alta {
+    border-left: 6px solid var(--priority-high);
+}
+
+.priority-media {
+    border-left: 6px solid var(--priority-medium);
+}
+
+.priority-baixa {
+    border-left: 6px solid var(--priority-low);
+}
+
+.card-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+    gap: 10px;
+}
+
+.card-actions button {
+    flex: 1;
+    padding: 8px;
+    font-size: 0.9em;
+}
