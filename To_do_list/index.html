@@ -1,55 +1,127 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agenda de Tarefas</title>
     <link rel="stylesheet" href="css/style.css">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <main class="container">
-        <header>
-            <h1>Agenda de Tarefas Inteligente</h1>
-            <p>Organize suas atividades do dia a dia.</p>
-        </header>
+    <div class="screen-wrapper">
+        <main class="app-container glass-effect">
+            <!-- Sidebar for Desktop View -->
+            <aside class="sidebar">
+                <div class="profile-section">
+                    <img src="https://ui-avatars.com/api/?name=L+B&background=eb25c7&color=fff&rounded=true&size=80" alt="Profile" class="profile-pic">
+                    <h1 class="greeting-sidebar">Lincoln <br>Borsoi</h1>
+                </div>
+                
+                <nav class="sidebar-nav">
+                    <a href="#" class="active"><i class="fa-solid fa-list-check"></i> Tarefas</a>
+                </nav>
 
-        <section class="controls">
+                <div class="sidebar-footer">
+                    <button class="icon-btn theme-btn" id="theme-toggle-desktop">
+                        <i class="fa-solid fa-sun"></i> <span class="theme-text">Trocar Tema</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <section class="main-content">
+                <header class="header">
+                    <div class="header-top">
+                        <button class="icon-btn mobile-menu"><i class="fa-solid fa-bars"></i></button>
+                        <h1 class="greeting-mobile">Olá,<br>Usuário!</h1>
+                        <h2 class="desktop-title">O que tem pra hoje?</h2>
+                        <div class="actions">
+                            <button class="icon-btn mobile-theme-btn" id="theme-toggle"><i class="fa-solid fa-sun"></i></button>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="dashboard-scrollable">
+                    <section class="categories-section">
+                        <div class="section-title-row">
+                            <h2>CATEGORIAS</h2>
+                        </div>
+                        <div class="categories-container" id="filter-category-container">
+                            <div class="category-card glass-effect active" data-value="todas">
+                                <p class="task-count" id="count-todas">0 tasks</p>
+                                <h3>Todas</h3>
+                                <div class="progress-bar"><div class="progress all" style="width: 100%;"></div></div>
+                            </div>
+                            <div class="category-card glass-effect" data-value="Trabalho">
+                                <p class="task-count" id="count-trabalho">0 tasks</p>
+                                <h3>Trabalho</h3>
+                                <div class="progress-bar"><div class="progress work" style="width: 50%;"></div></div>
+                            </div>
+                            <div class="category-card glass-effect" data-value="Estudos">
+                                <p class="task-count" id="count-estudos">0 tasks</p>
+                                <h3>Estudos</h3>
+                                <div class="progress-bar"><div class="progress studies" style="width: 30%;"></div></div>
+                            </div>
+                            <div class="category-card glass-effect" data-value="Pessoal">
+                                <p class="task-count" id="count-pessoal">0 tasks</p>
+                                <h3>Pessoal</h3>
+                                <div class="progress-bar"><div class="progress personal" style="width: 70%;"></div></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="tasks-section">
+                        <div class="tasks-header">
+                            <h2>TAREFAS EM ABERTO</h2>
+                            <select id="sort-tasks" class="sort-select glass-effect">
+                                <option value="none">Ordenar</option>
+                                <option value="date">Data Limite</option>
+                                <option value="priority">Prioridade</option>
+                            </select>
+                        </div>
+                        <div class="task-list" id="task-list">
+                            <!-- Cards de tarefa gerados pelo JS -->
+                        </div>
+                    </section>
+                </div>
+            </section>
+
+            <button class="fab" id="add-task-btn"><i class="fa-solid fa-plus"></i></button>
+        </main>
+    </div>
+
+    <!-- Modal para adicionar tarefa -->
+    <div class="modal-overlay" id="task-modal">
+        <div class="modal-content glass-effect">
+            <button class="close-modal" id="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            <h2>Nova Tarefa</h2>
             <form id="task-form">
-                <input type="text" id="task-name" placeholder="Nome da tarefa" required>
-                <select id="task-category" required>
-                    <option value="">Categoria...</option>
+                <input type="text" id="task-name" class="glass-input" placeholder="O que você vai fazer?" required>
+                <select id="task-category" class="glass-input" required>
+                    <option value="" disabled selected>Escolha a Categoria</option>
                     <option value="Trabalho">Trabalho</option>
                     <option value="Estudos">Estudos</option>
                     <option value="Pessoal">Pessoal</option>
                 </select>
-                <select id="task-priority" required>
-                    <option value="">Prioridade...</option>
+                <select id="task-priority" class="glass-input" required>
+                    <option value="" disabled selected>Nível de Prioridade</option>
                     <option value="alta">Alta</option>
                     <option value="media">Média</option>
                     <option value="baixa">Baixa</option>
                 </select>
-                <input type="date" id="task-date" required>
-                <button type="submit">Adicionar Tarefa</button>
+                <label class="date-label" for="task-date">Data Limite:</label>
+                <input type="date" id="task-date" class="glass-input" required>
+                
+                <button type="submit" class="submit-btn">Adicionar</button>
             </form>
+        </div>
+    </div>
 
-            <div class="filters">
-                <select id="filter-category">
-                    <option value="todas">Todas as Categorias</option>
-                    <option value="Trabalho">Trabalho</option>
-                    <option value="Estudos">Estudos</option>
-                    <option value="Pessoal">Pessoal</option>
-                </select>
-                <select id="sort-tasks">
-                    <option value="none">Ordenar por...</option>
-                    <option value="date">Data Limite</option>
-                    <option value="priority">Prioridade</option>
-                </select>
-            </div>
-        </section>
-
-        <section class="task-list" id="task-list">
-            </section>
-    </main>
     <script src="js/script.js"></script>
 </body>
 </html>
