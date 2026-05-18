@@ -16,6 +16,7 @@ interface TableProps<T> {
   currentPage?: number;
   totalItems?: number;
   itemsPerPage?: number;
+  onPageChange?: (page: number) => void;
 }
 
 const Table = <T extends { id: string | number }>({ 
@@ -25,7 +26,8 @@ const Table = <T extends { id: string | number }>({
   onDelete,
   currentPage = 1,
   totalItems = 0,
-  itemsPerPage = 10
+  itemsPerPage = 10,
+  onPageChange
 }: TableProps<T>) => {
   
   const startItem = (currentPage - 1) * itemsPerPage + 1;
@@ -84,7 +86,7 @@ const Table = <T extends { id: string | number }>({
         </div>
 
         <div className="pagination-controls">
-          <button className="pagination-btn" disabled={currentPage === 1}>
+          <button className="pagination-btn" disabled={currentPage === 1} onClick={() => onPageChange?.(currentPage - 1)}>
             <ChevronLeft size={20} />
           </button>
           
@@ -92,7 +94,7 @@ const Table = <T extends { id: string | number }>({
             {currentPage}/{totalPages || 1}
           </div>
 
-          <button className="pagination-btn" disabled={currentPage === totalPages || totalPages === 0}>
+          <button className="pagination-btn" disabled={currentPage === totalPages || totalPages === 0} onClick={() => onPageChange?.(currentPage + 1)}>
             <ChevronRight size={20} />
           </button>
         </div>

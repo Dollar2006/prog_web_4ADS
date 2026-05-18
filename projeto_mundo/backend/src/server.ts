@@ -13,6 +13,8 @@ app.use(cors({
 }));
 
 import prisma from './lib/prisma.js';
+import continentsRoutes from './routes/continents.js';
+import countriesRoutes from './routes/countries.js';
 
 app.use(express.json());
 
@@ -21,27 +23,9 @@ app.get('/api/status', (req, res) => {
   res.json({ status: 'OK', message: 'Backend do Projeto Mundo está rodando!' });
 });
 
-// Listar todos os continentes
-app.get('/api/continentes', async (req, res) => {
-  try {
-    const continentes = await prisma.continente.findMany();
-    res.json(continentes);
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar continentes' });
-  }
-});
+app.use('/api/continents', continentsRoutes);
 
-// Listar todos os países
-app.get('/api/paises', async (req, res) => {
-  try {
-    const paises = await prisma.pais.findMany({
-      include: { continente: true }
-    });
-    res.json(paises);
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar países' });
-  }
-});
+app.use('/api/countries', countriesRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

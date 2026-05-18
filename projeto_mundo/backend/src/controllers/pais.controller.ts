@@ -1,0 +1,110 @@
+import { Request, Response } from 'express';
+import * as paisService from '../services/pais.service.js';
+
+export async function createCountry(req: Request, res: Response) {
+  try {
+    const { nome, populacao, idiomaOficial, moeda, idContinente } = req.body;
+    const result = await paisService.createCountry({
+      nome,
+      populacao: typeof populacao === 'string' ? BigInt(populacao) : populacao,
+      idiomaOficial,
+      moeda,
+      idContinente: Number(idContinente),
+    });
+
+    const responseData = {
+      ...result,
+      populacao: Number(result.populacao),
+    };
+
+    return res.status(201).json(responseData);
+  } catch (error: any) {
+    if (error.message === 'País não encontrado') {
+      return res.status(404).json({ error: 'País não encontrado' });
+    }
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+}
+
+export async function listCountries(req: Request, res: Response) {
+  try {
+    const { continentId } = req.query;
+    let result;
+
+    if (continentId) {
+      result = await paisService.listCountriesByContinent(Number(continentId));
+    } else {
+      result = await paisService.listCountries();
+    }
+
+    const responseData = result.map((c) => ({
+      ...c,
+      populacao: Number(c.populacao),
+    }));
+
+    return res.status(200).json(responseData);
+  } catch (error: any) {
+    if (error.message === 'País não encontrado') {
+      return res.status(404).json({ error: 'País não encontrado' });
+    }
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+}
+
+export async function getCountryById(req: Request, res: Response) {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const result = await paisService.getCountryById(id);
+
+    const responseData = {
+      ...result,
+      populacao: Number(result.populacao),
+    };
+
+    return res.status(200).json(responseData);
+  } catch (error: any) {
+    if (error.message === 'País não encontrado') {
+      return res.status(404).json({ error: 'País não encontrado' });
+    }
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+}
+
+export async function updateCountry(req: Request, res: Response) {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const { nome, populacao, idiomaOficial, moeda, idContinente } = req.body;
+    const result = await paisService.updateCountry(id, {
+      nome,
+      populacao: typeof populacao === 'string' ? BigInt(populacao) : populacao,
+      idiomaOficial,
+      moeda,
+      idContinente: Number(idContinente),
+    });
+
+    const responseData = {
+      ...result,
+      populacao: Number(result.populacao),
+    };
+
+    return res.status(200).json(responseData);
+  } catch (error: any) {
+    if (error.message === 'País não encontrado') {
+      return res.status(404).json({ error: 'País não encontrado' });
+    }
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+}
+
+export async function deleteCountry(req: Request, res: Response) {
+  try {
+    const id = parseInt(req.params.id, 10);
+    await paisService.deleteCountry(id);
+    return res.status(204).send();
+  } catch (error: any) {
+    if (error.message === 'País não encontrado') {
+      return res.status(404).json({ error: 'País não encontrado' });
+    }
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+}
