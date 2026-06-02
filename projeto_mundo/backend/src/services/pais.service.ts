@@ -1,35 +1,34 @@
 import prisma from '../lib/prisma.js';
+import * as continenteService from './continente.service.js';
 
 interface CountryInput {
-  nome: string;
-  populacao: number | bigint;
-  idiomaOficial: string;
-  moeda: string;
-  idContinente: number;
+  nome?: string;
+  populacao?: number | bigint;
+  idiomaOficial?: string;
+  moeda?: string;
+  idContinente?: number;
 }
 
 export async function createCountry(data: CountryInput) {
+  if (!data.idContinente) {
+    throw new Error('ID do continente é obrigatório');
+  }
+
+  await continenteService.getContinentById(data.idContinente);
+
   return await prisma.pais.create({
-    data,
-  });
-}
-
-export async function listCountries() {
-  return await prisma.pais.findMany({
-    orderBy: {
-      nome: 'asc',
-    },
-    include: {
-      continente: true,
+    data: {
+      ...data,
+      populacao: data.populacao ? BigInt(data.populacao) : undefined,
     },
   });
 }
 
-export async function listCountriesByContinent(idContinente: number) {
+export async function listCountries(continentId?: number) {
+  const where = continentId ? { idContinente: continentId } : {};
+  
   return await prisma.pais.findMany({
-    where: {
-      idContinente,
-    },
+    where,
     orderBy: {
       nome: 'asc',
     },
@@ -55,14 +54,35 @@ export async function getCountryById(id: number) {
 }
 
 export async function updateCountry(id: number, data: CountryInput) {
-  return await prisma.pais.update({
-    where: { id },
-    data,
-  });
+  if (data.idContinente) {
+    await continenteService.getContinentById(data.idContinente);
+  }
+
+  try {
+    return await prisma.pais.update({
+      where: { id },
+      data: {
+        ...data,
+        populacao: data.populacao ? BigInt(data.populacao) : undefined,
+      },
+    });
+  } catch (error: any) {
+    if (error.code === 'P2025') {
+      throw new Error('País não encontrado');
+    }
+    throw error;
+  }
 }
 
 export async function deleteCountry(id: number) {
-  return await prisma.pais.delete({
-    where: { id },
-  });
+  try {
+    return await prisma.pais.delete({
+      where: { id },
+    });
+  } catch (error: any) {
+    if (error.code === 'P2025') {
+      throw new Error('País não encontrado');
+    }
+    throw error;
+  }
 }

@@ -4,7 +4,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(4, 6, 12, 0.8);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -14,18 +14,18 @@
 }
 
 .modal-container {
-  background: #111827;
+  background: #131c2e; /* Corrigido para o tom escuro do GeoAdmin */
   width: 100%;
-  max-width: 500px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 460px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   overflow: hidden;
-  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: slideUp 0.25s ease-out;
 }
 
 .modal-header {
-  padding: 1.5rem;
+  padding: 24px 24px 16px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -33,7 +33,7 @@
 }
 
 .modal-header h2 {
-  font-size: 1.25rem;
+  font-size: 20px;
   font-weight: 700;
   color: #f8fafc;
   margin: 0;
@@ -42,30 +42,119 @@
 .modal-close-btn {
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: #64748b;
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 8px;
+  padding: 4px;
+  border-radius: 6px;
   transition: all 0.2s;
   display: flex;
 }
 
 .modal-close-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
   color: #f8fafc;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .modal-content {
-  padding: 1.5rem;
+  padding: 24px;
 }
 
-.modal-footer {
-  padding: 1rem 1.5rem;
-  background: rgba(0, 0, 0, 0.2);
+/* Formulários e Inputs do Modal */
+.modal-content form {
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.form-group input, 
+.form-group select {
+  background: #1a2436;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: #f8fafc;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-group input:focus, 
+.form-group select:focus {
+  border-color: #3b82f6;
+}
+
+.form-group input::placeholder {
+  color: #475569;
+}
+
+/* Correção para o elemento Select nativo */
+.form-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+/* Grupo de botões inferior estruturado */
+.form-actions {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.btn-save, 
+.modal-content button[type="submit"] {
+  padding: 10px 20px;
+  background: #10b981;
+  border: none;
+  color: #0b111e;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-cancel, 
+.modal-content button[type="button"] {
+  padding: 10px 20px;
+  background: #1a2436;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-save:hover, 
+.modal-content button[type="submit"]:hover {
+  opacity: 0.9;
+}
+
+.btn-cancel:hover, 
+.modal-content button[type="button"]:hover {
+  background: #24324a;
+  color: #f8fafc;
 }
 
 /* Animações */
@@ -77,78 +166,10 @@
 @keyframes slideUp {
   from { 
     opacity: 0;
-    transform: translateY(20px) scale(0.95);
+    transform: translateY(10px);
   }
   to { 
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
-}
-
-/* Estilos de Botão Comuns para Modais */
-.btn-cancel {
-  padding: 0.625rem 1.25rem;
-  background: #1f2937;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #94a3b8;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-cancel:hover {
-  background: #374151;
-  color: #f8fafc;
-}
-
-.btn-save {
-  padding: 0.625rem 1.5rem;
-  background: #22c55e;
-  border: none;
-  color: white;
-  border-radius: 10px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
-}
-
-.btn-save:hover {
-  background: #16a34a;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 15px rgba(34, 197, 94, 0.3);
-}
-
-/* Estilos de Formulário dentro do Modal */
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.form-group label {
-  color: #94a3b8;
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-
-.form-group input {
-  background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 0.875rem 1rem;
-  border-radius: 12px;
-  color: white;
-  font-size: 1rem;
-  transition: all 0.2s;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-}
-
-.form-group input::placeholder {
-  color: #475569;
 }

@@ -4,6 +4,7 @@ import * as continenteController from '../controllers/continente.controller.js';
 const router = Router();
 
 router.get('/', continenteController.listContinents);
+router.get('/stats', continenteController.getDashboardStats);
 router.get('/:id', continenteController.getContinentById);
 router.post('/', continenteController.createContinent);
 router.put('/:id', continenteController.updateContinent);

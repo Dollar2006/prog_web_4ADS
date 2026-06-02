@@ -13,8 +13,11 @@ app.use(cors({
 }));
 
 import prisma from './lib/prisma.js';
+import { seedDefaultUsers } from './lib/seed.js';
+import authRoutes from './routes/auth.js';
 import continentsRoutes from './routes/continents.js';
 import countriesRoutes from './routes/countries.js';
+import citiesRoutes from './routes/cities.js';
 
 app.use(express.json());
 
@@ -23,10 +26,38 @@ app.get('/api/status', (req, res) => {
   res.json({ status: 'OK', message: 'Backend do Projeto Mundo está rodando!' });
 });
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'healthy' });
+});
+
+app.use('/api/auth', authRoutes);
+
 app.use('/api/continents', continentsRoutes);
 
 app.use('/api/countries', countriesRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+app.use('/api/cities', citiesRoutes);
+
+// Inicia o servidor e faz seed dos usuários padrão
+async function startServer() {
+  try {
+    // Verifica conexão com o banco
+    await prisma.$connect();
+    console.log('✓ Conectado ao banco de dados');
+
+    // Faz seed dos usuários padrão
+    await seedDefaultUsers();
+
+    app.listen(PORT, () => {
+      console.log(`\n✓ Server is running on http://localhost:${PORT}\n`);
+    });
+  } catch (error) {
+    console.error('Erro ao iniciar o servidor:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
+
+

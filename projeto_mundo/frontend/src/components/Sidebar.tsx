@@ -1,9 +1,18 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { Home, Globe, Map, Building2, Newspaper } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { Home, Globe, Map, Building2, Newspaper, LogOut } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 import '../styles/sidebar.css';
 
 const Sidebar: React.FC = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   const menuItems = [
     { name: 'Home', icon: Home, path: '/' },
     { name: 'Continentes', icon: Globe, path: '/continentes' },
@@ -35,7 +44,16 @@ const Sidebar: React.FC = () => {
       </nav>
 
       <div className="sidebar-footer">
-        <p>© 2026 Projeto Mundo</p>
+        {user && (
+          <div className="user-info">
+            <div className="user-email">{user.email}</div>
+            <button onClick={handleLogout} className="logout-btn">
+              <LogOut size={16} />
+              <span>Sair</span>
+            </button>
+          </div>
+        )}
+        <p className="copyright">© 2026 Projeto Mundo</p>
       </div>
     </aside>
   );

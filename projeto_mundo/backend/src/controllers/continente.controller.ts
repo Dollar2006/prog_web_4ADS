@@ -28,7 +28,11 @@ export async function listContinents(req: Request, res: Response) {
 
 export async function getContinentById(req: Request, res: Response) {
   try {
-    const id = parseInt(req.params.id, 10);
+    const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const id = parseInt(idParam ?? '', 10);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'ID inválido' });
+    }
     const result = await continenteService.getContinentById(id);
     return res.status(200).json(result);
   } catch (error: any) {
@@ -41,7 +45,11 @@ export async function getContinentById(req: Request, res: Response) {
 
 export async function updateContinent(req: Request, res: Response) {
   try {
-    const id = parseInt(req.params.id, 10);
+    const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const id = parseInt(idParam ?? '', 10);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'ID inválido' });
+    }
     const { nome, descricao } = req.body;
     const result = await continenteService.updateContinent(id, { nome, descricao });
     return res.status(200).json(result);
@@ -55,7 +63,11 @@ export async function updateContinent(req: Request, res: Response) {
 
 export async function deleteContinent(req: Request, res: Response) {
   try {
-    const id = parseInt(req.params.id, 10);
+    const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const id = parseInt(idParam ?? '', 10);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'ID inválido' });
+    }
     await continenteService.deleteContinent(id);
     return res.status(204).send();
   } catch (error: any) {
@@ -65,3 +77,14 @@ export async function deleteContinent(req: Request, res: Response) {
     return res.status(500).json({ error: 'Erro interno do servidor' });
   }
 }
+
+export async function getDashboardStats(req: Request, res: Response) {
+  try {
+    const stats = await continenteService.getDashboardStats();
+    return res.status(200).json(stats);
+  } catch (error: any) {
+    console.error(error);
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+}
+

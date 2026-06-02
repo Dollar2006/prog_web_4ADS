@@ -13,10 +13,11 @@ interface TableProps<T> {
   data: T[];
   onEdit?: (item: T) => void;
   onDelete?: (item: T) => void;
-  currentPage?: number;
-  totalItems?: number;
+  isLoading: boolean;
+  currentPage: number;
+  totalItems: number;
   itemsPerPage?: number;
-  onPageChange?: (page: number) => void;
+  onPageChange: (page: number) => void;
 }
 
 const Table = <T extends { id: string | number }>({ 
@@ -24,8 +25,9 @@ const Table = <T extends { id: string | number }>({
   data, 
   onEdit, 
   onDelete,
-  currentPage = 1,
-  totalItems = 0,
+  isLoading,
+  currentPage,
+  totalItems,
   itemsPerPage = 10,
   onPageChange
 }: TableProps<T>) => {
@@ -37,7 +39,7 @@ const Table = <T extends { id: string | number }>({
   return (
     <div className="table-container">
       <div className="table-wrapper">
-        <table>
+        <table className={isLoading ? 'table-loading' : ''}>
           <thead>
             <tr>
               {columns.map((col, index) => (
@@ -47,58 +49,77 @@ const Table = <T extends { id: string | number }>({
             </tr>
           </thead>
           <tbody>
-            {data.map((item) => (
-              <tr key={item.id}>
-                {columns.map((col, index) => (
-                  <td key={index}>
-                    {col.render ? col.render(item) : (item[col.key as keyof T] as React.ReactNode)}
-                  </td>
-                ))}
-                {(onEdit || onDelete) && (
-                  <td>
-                    <div className="actions-cell">
-                      {onEdit && (
-                        <Pencil 
-                          size={18} 
-                          className="action-icon" 
-                          onClick={() => onEdit(item)} 
-                        />
-                      )}
-                      {onDelete && (
-                        <Trash2 
-                          size={18} 
-                          className="action-icon" 
-                          onClick={() => onDelete(item)} 
-                        />
-                      )}
-                    </div>
-                  </td>
-                )}
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i} className="skeleton-row">
+                  {columns.map((_, index) => (
+                    <td key={index} className="skeleton-cell" />
+                  ))}
+                  {(onEdit || onDelete) && <td className="skeleton-cell" />}
+                </tr>
+              ))
+            ) : data.length > 0 ? (
+              data.map((item) => (
+                <tr key={item.id}>
+                  {columns.map((col, index) => (
+                    <td key={index}>
+                      {col.render ? col.render(item) : (item[col.key as keyof T] as React.ReactNode)}
+                    </td>
+                  ))}
+                  {(onEdit || onDelete) && (
+                    <td>
+                      <div className="actions-cell">
+                        {onEdit && (
+                          <Pencil 
+                            size={18} 
+                            className="action-icon" 
+                            onClick={() => onEdit(item)} 
+                          />
+                        )}
+                        {onDelete && (
+                          <Trash2 
+                            size={18} 
+                            className="action-icon" 
+                            onClick={() => onDelete(item)} 
+                          />
+                        )}
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={columns.length + (onEdit || onDelete ? 1 : 0)} style={{ textAlign: 'center' }}>
+                  Nenhum registro encontrado.
+                </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
 
-      <div className="pagination-container">
-        <div className="pagination-info">
-          <span>{startItem} – {endItem}</span> de <span>{totalItems}</span> registros
-        </div>
-
-        <div className="pagination-controls">
-          <button className="pagination-btn" disabled={currentPage === 1} onClick={() => onPageChange?.(currentPage - 1)}>
-            <ChevronLeft size={20} />
-          </button>
-          
-          <div className="pagination-pages">
-            {currentPage}/{totalPages || 1}
+      {totalPages > 1 && (
+        <div className="pagination-container">
+          <div className="pagination-info">
+            <span>{startItem} – {endItem}</span> de <span>{totalItems}</span> registros
           </div>
 
-          <button className="pagination-btn" disabled={currentPage === totalPages || totalPages === 0} onClick={() => onPageChange?.(currentPage + 1)}>
-            <ChevronRight size={20} />
-          </button>
+          <div className="pagination-controls">
+            <button className="pagination-btn" disabled={currentPage === 1} onClick={() => onPageChange(currentPage - 1)}>
+              <ChevronLeft size={20} />
+            </button>
+            
+            <div className="pagination-pages">
+              {currentPage}/{totalPages}
+            </div>
+
+            <button className="pagination-btn" disabled={currentPage === totalPages} onClick={() => onPageChange(currentPage + 1)}>
+              <ChevronRight size={20} />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

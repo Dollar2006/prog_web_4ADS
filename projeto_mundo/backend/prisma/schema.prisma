@@ -6,6 +6,19 @@ datasource db {
   provider = "postgresql"
 }
 
+model Usuario {
+  id            Int       @id @default(autoincrement())
+  email         String    @unique @db.VarChar(150)
+  senha         String    @db.VarChar(255)
+  role          String    @default("user") @db.VarChar(50)
+  resetToken    String?   @db.VarChar(255) @map("reset_token")
+  resetExpires  DateTime? @map("reset_expires")
+  criadoEm      DateTime  @default(now()) @map("criado_em")
+  atualizadoEm  DateTime  @updatedAt @map("atualizado_em")
+
+  @@map("usuario")
+}
+
 model Continente {
   id          Int      @id @default(autoincrement())
   nome        String   @unique @db.VarChar(100)
