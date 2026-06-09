@@ -18,6 +18,7 @@ import authRoutes from './routes/auth.js';
 import continentsRoutes from './routes/continents.js';
 import countriesRoutes from './routes/countries.js';
 import citiesRoutes from './routes/cities.js';
+import * as cidadeController from './controllers/cidade.controller.js';
 
 app.use(express.json());
 
@@ -30,6 +31,11 @@ app.get('/api/status', (req, res) => {
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'healthy' });
 });
+
+// ============================================
+// ROTA PÚBLICA - Validação de Cidade (SEM AUTENTICAÇÃO)
+// ============================================
+app.get('/api/cities/validate', cidadeController.validateCity);
 
 app.use('/api/auth', authRoutes);
 

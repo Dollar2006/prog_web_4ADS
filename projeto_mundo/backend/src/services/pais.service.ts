@@ -9,6 +9,18 @@ interface CountryInput {
   idContinente?: number;
 }
 
+function serializeBigInt<T>(data: T): T {
+  return JSON.parse(
+    JSON.stringify(
+      data,
+      (_, value) =>
+        typeof value === 'bigint'
+          ? Number(value)
+          : value
+    )
+  );
+}
+
 export async function createCountry(data: CountryInput) {
   if (!data.idContinente) {
     throw new Error('ID do continente é obrigatório');
@@ -16,18 +28,25 @@ export async function createCountry(data: CountryInput) {
 
   await continenteService.getContinentById(data.idContinente);
 
-  return await prisma.pais.create({
+  const pais = await prisma.pais.create({
     data: {
       ...data,
-      populacao: data.populacao ? BigInt(data.populacao) : undefined,
+      populacao:
+        data.populacao !== undefined
+          ? BigInt(data.populacao)
+          : undefined,
     },
   });
+
+  return serializeBigInt(pais);
 }
 
 export async function listCountries(continentId?: number) {
-  const where = continentId ? { idContinente: continentId } : {};
-  
-  return await prisma.pais.findMany({
+  const where = continentId
+    ? { idContinente: continentId }
+    : {};
+
+  const paises = await prisma.pais.findMany({
     where,
     orderBy: {
       nome: 'asc',
@@ -36,6 +55,8 @@ export async function listCountries(continentId?: number) {
       continente: true,
     },
   });
+
+  return serializeBigInt(paises);
 }
 
 export async function getCountryById(id: number) {
@@ -50,26 +71,37 @@ export async function getCountryById(id: number) {
     throw new Error('País não encontrado');
   }
 
-  return pais;
+  return serializeBigInt(pais);
 }
 
-export async function updateCountry(id: number, data: CountryInput) {
+export async function updateCountry(
+  id: number,
+  data: CountryInput
+) {
   if (data.idContinente) {
-    await continenteService.getContinentById(data.idContinente);
+    await continenteService.getContinentById(
+      data.idContinente
+    );
   }
 
   try {
-    return await prisma.pais.update({
+    const pais = await prisma.pais.update({
       where: { id },
       data: {
         ...data,
-        populacao: data.populacao ? BigInt(data.populacao) : undefined,
+        populacao:
+          data.populacao !== undefined
+            ? BigInt(data.populacao)
+            : undefined,
       },
     });
+
+    return serializeBigInt(pais);
   } catch (error: any) {
     if (error.code === 'P2025') {
       throw new Error('País não encontrado');
     }
+
     throw error;
   }
 }
@@ -78,11 +110,12 @@ export async function deleteCountry(id: number) {
   try {
     return await prisma.pais.delete({
       where: { id },
-    });
+  });
   } catch (error: any) {
     if (error.code === 'P2025') {
       throw new Error('País não encontrado');
     }
+
     throw error;
   }
 }

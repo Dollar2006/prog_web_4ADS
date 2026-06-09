@@ -4,9 +4,10 @@ import { authMiddleware } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
-// Apply auth middleware to all routes
+// Aplicar middleware de autenticação a TODAS as rotas
 router.use(authMiddleware);
 
+// Rotas protegidas
 router.post('/', cidadeController.createCity);
 router.get('/', cidadeController.listCities);
 router.get('/:id', cidadeController.getCityById);

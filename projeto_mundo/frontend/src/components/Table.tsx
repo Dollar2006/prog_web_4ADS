@@ -13,6 +13,7 @@ interface TableProps<T> {
   data: T[];
   onEdit?: (item: T) => void;
   onDelete?: (item: T) => void;
+  onRowClick?: (item: T) => void;
   isLoading: boolean;
   currentPage: number;
   totalItems: number;
@@ -25,6 +26,7 @@ const Table = <T extends { id: string | number }>({
   data, 
   onEdit, 
   onDelete,
+  onRowClick,
   isLoading,
   currentPage,
   totalItems,
@@ -60,14 +62,14 @@ const Table = <T extends { id: string | number }>({
               ))
             ) : data.length > 0 ? (
               data.map((item) => (
-                <tr key={item.id}>
+                <tr key={item.id} onClick={() => onRowClick?.(item)} style={{ cursor: onRowClick ? 'pointer' : 'default' }}>
                   {columns.map((col, index) => (
                     <td key={index}>
                       {col.render ? col.render(item) : (item[col.key as keyof T] as React.ReactNode)}
                     </td>
                   ))}
                   {(onEdit || onDelete) && (
-                    <td>
+                    <td onClick={(e) => e.stopPropagation()}>
                       <div className="actions-cell">
                         {onEdit && (
                           <Pencil 

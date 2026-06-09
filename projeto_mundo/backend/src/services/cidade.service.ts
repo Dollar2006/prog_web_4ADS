@@ -14,6 +14,18 @@ interface CityFilters {
   continentId?: number;
 }
 
+function serializeBigInt<T>(data: T): T {
+  return JSON.parse(
+    JSON.stringify(
+      data,
+      (_, value) =>
+        typeof value === 'bigint'
+          ? Number(value)
+          : value
+    )
+  );
+}
+
 export async function listCities(filters: CityFilters = {}) {
   const where: any = {};
 
@@ -27,7 +39,7 @@ export async function listCities(filters: CityFilters = {}) {
     };
   }
 
-  return await prisma.cidade.findMany({
+  const cidades = await prisma.cidade.findMany({
     where,
     include: {
       pais: {
@@ -47,6 +59,8 @@ export async function listCities(filters: CityFilters = {}) {
       },
     ],
   });
+
+  return serializeBigInt(cidades);
 }
 
 export async function getCityById(id: number) {
@@ -65,19 +79,30 @@ export async function getCityById(id: number) {
     throw new Error('Cidade não encontrada');
   }
 
-  return cidade;
+  return serializeBigInt(cidade);
 }
 
 export async function createCity(data: CityInput) {
-  // Validate that country exists
   await paisService.getCountryById(data.idPais);
 
-  return await prisma.cidade.create({
+  const cidade = await prisma.cidade.create({
     data: {
       nome: data.nome,
-      populacao: typeof data.populacao === 'string' ? BigInt(data.populacao) : BigInt(data.populacao),
-      latitude: typeof data.latitude === 'string' ? parseFloat(data.latitude) : data.latitude,
-      longitude: typeof data.longitude === 'string' ? parseFloat(data.longitude) : data.longitude,
+      populacao:
+        typeof data.populacao === 'string'
+          ? BigInt(data.populacao)
+          : BigInt(data.populacao),
+
+      latitude:
+        typeof data.latitude === 'string'
+          ? parseFloat(data.latitude)
+          : data.latitude,
+
+      longitude:
+        typeof data.longitude === 'string'
+          ? parseFloat(data.longitude)
+          : data.longitude,
+
       idPais: data.idPais,
     },
     include: {
@@ -88,36 +113,56 @@ export async function createCity(data: CityInput) {
       },
     },
   });
+
+  return serializeBigInt(cidade);
 }
 
-export async function updateCity(id: number, data: Partial<CityInput>) {
-  // Verify city exists and country exists (if provided) in parallel
+export async function updateCity(
+  id: number,
+  data: Partial<CityInput>
+) {
   const promises = [getCityById(id)];
 
   if (data.idPais) {
-    promises.push(paisService.getCountryById(data.idPais));
+    promises.push(
+      paisService.getCountryById(data.idPais)
+    );
   }
 
   await Promise.all(promises);
 
   try {
-    return await prisma.cidade.update({
+    const cidade = await prisma.cidade.update({
       where: { id },
       data: {
-        ...(data.nome && { nome: data.nome }),
+        ...(data.nome && {
+          nome: data.nome,
+        }),
+
         ...(data.populacao !== undefined && {
           populacao:
-            typeof data.populacao === 'string' ? BigInt(data.populacao) : BigInt(data.populacao),
+            typeof data.populacao === 'string'
+              ? BigInt(data.populacao)
+              : BigInt(data.populacao),
         }),
+
         ...(data.latitude !== undefined && {
           latitude:
-            typeof data.latitude === 'string' ? parseFloat(data.latitude) : data.latitude,
+            typeof data.latitude === 'string'
+              ? parseFloat(data.latitude)
+              : data.latitude,
         }),
+
         ...(data.longitude !== undefined && {
           longitude:
-            typeof data.longitude === 'string' ? parseFloat(data.longitude) : data.longitude,
+            typeof data.longitude === 'string'
+              ? parseFloat(data.longitude)
+              : data.longitude,
         }),
-        ...(data.idPais !== undefined && { idPais: data.idPais }),
+
+        ...(data.idPais !== undefined && {
+          idPais: data.idPais,
+        }),
       },
       include: {
         pais: {
@@ -127,10 +172,13 @@ export async function updateCity(id: number, data: Partial<CityInput>) {
         },
       },
     });
+
+    return serializeBigInt(cidade);
   } catch (error: any) {
     if (error.code === 'P2025') {
       throw new Error('Cidade não encontrada');
     }
+
     throw error;
   }
 }
@@ -144,6 +192,7 @@ export async function deleteCity(id: number) {
     if (error.code === 'P2025') {
       throw new Error('Cidade não encontrada');
     }
+
     throw error;
   }
 }

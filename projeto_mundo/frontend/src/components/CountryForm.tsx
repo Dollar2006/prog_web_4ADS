@@ -58,8 +58,13 @@ const CountryForm: React.FC<CountryFormProps> = ({ country, onSuccess, onClose }
       return;
     }
 
-    if (parseInt(populacao) < 0) {
+    const pop = parseInt(populacao);
+    if (pop < 0) {
       setError('A população não pode ser negativa');
+      return;
+    }
+    if (pop > 2147483647) {
+      setError('A população não pode exceder 2.147.483.647');
       return;
     }
 

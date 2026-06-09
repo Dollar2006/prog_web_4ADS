@@ -25,12 +25,11 @@ interface CityFormProps {
 const CityForm: React.FC<CityFormProps> = ({ city, onSuccess, onClose }) => {
   const [nome, setNome] = useState('');
   const [populacao, setPopulacao] = useState('');
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
   const [idPais, setIdPais] = useState('');
   const [countries, setCountries] = useState<Country[]>([]);
   const [isLoadingCountries, setIsLoadingCountries] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isValidatingCity, setIsValidatingCity] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -51,11 +50,36 @@ const CityForm: React.FC<CityFormProps> = ({ city, onSuccess, onClose }) => {
     if (city) {
       setNome(city.nome);
       setPopulacao(city.populacao.toString());
-      setLatitude(parseFloat(city.latitude.toString()).toString());
-      setLongitude(parseFloat(city.longitude.toString()).toString());
       setIdPais(city.idPais.toString());
     }
   }, [city]);
+
+  const handleAutoCorrectCity = async () => {
+    if (!nome.trim()) return;
+
+    setIsValidatingCity(true);
+    try {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      const res = await fetch(`${baseUrl}/api/cities/validate?nome=${encodeURIComponent(nome)}`);
+      
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.cidade) {
+          setNome(data.cidade); // Auto-corrige a grafia (Ex: "sao paulo" -> "São Paulo")
+          setErrors((prev) => {
+            const { nome: _, ...rest } = prev;
+            return rest;
+          });
+        }
+      } else {
+        setErrors((prev) => ({ ...prev, nome: 'Cidade não encontrada na API do clima' }));
+      }
+    } catch (err) {
+      console.warn('Erro ao auto-corrigir cidade pelo backend', err);
+    } finally {
+      setIsValidatingCity(false);
+    }
+  };
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -73,24 +97,6 @@ const CityForm: React.FC<CityFormProps> = ({ city, onSuccess, onClose }) => {
       }
     }
 
-    if (!latitude) {
-      newErrors.latitude = 'Latitude é obrigatória';
-    } else {
-      const lat = parseFloat(latitude);
-      if (isNaN(lat) || lat < -90 || lat > 90) {
-        newErrors.latitude = 'Latitude deve estar entre -90 e 90';
-      }
-    }
-
-    if (!longitude) {
-      newErrors.longitude = 'Longitude é obrigatória';
-    } else {
-      const lon = parseFloat(longitude);
-      if (isNaN(lon) || lon < -180 || lon > 180) {
-        newErrors.longitude = 'Longitude deve estar entre -180 e 180';
-      }
-    }
-
     if (!idPais) {
       newErrors.idPais = 'País é obrigatório';
     }
@@ -102,17 +108,13 @@ const CityForm: React.FC<CityFormProps> = ({ city, onSuccess, onClose }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
     try {
       const data = {
-        nome,
+        nome: nome.trim(),
         populacao: parseInt(populacao),
-        latitude: parseFloat(latitude),
-        longitude: parseFloat(longitude),
         idPais: parseInt(idPais),
       };
 
@@ -135,15 +137,18 @@ const CityForm: React.FC<CityFormProps> = ({ city, onSuccess, onClose }) => {
       {errors.general && <div className="error-message">{errors.general}</div>}
 
       <div className="form-group">
-        <label htmlFor="nome">Nome *</label>
+        <label htmlFor="nome">Nome da Cidade *</label>
         <input
           id="nome"
           type="text"
           value={nome}
           onChange={(e) => setNome(e.target.value)}
-          placeholder="Ex: São Paulo"
+          onBlur={handleAutoCorrectCity}
+          placeholder="Ex: lisboa"
           className={errors.nome ? 'input-error' : ''}
+          disabled={isSubmitting}
         />
+        {isValidatingCity && <span className="loading-text-subtle" style={{ fontSize: '12px', color: '#666' }}> Verificando...</span>}
         {errors.nome && <span className="error-text">{errors.nome}</span>}
       </div>
 
@@ -154,38 +159,11 @@ const CityForm: React.FC<CityFormProps> = ({ city, onSuccess, onClose }) => {
           type="number"
           value={populacao}
           onChange={(e) => setPopulacao(e.target.value)}
-          placeholder="Ex: 12000000"
+          placeholder="Ex: 500000"
           className={errors.populacao ? 'input-error' : ''}
+          disabled={isSubmitting}
         />
         {errors.populacao && <span className="error-text">{errors.populacao}</span>}
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="latitude">Latitude *</label>
-        <input
-          id="latitude"
-          type="number"
-          step="0.000001"
-          value={latitude}
-          onChange={(e) => setLatitude(e.target.value)}
-          placeholder="Ex: -23.5505"
-          className={errors.latitude ? 'input-error' : ''}
-        />
-        {errors.latitude && <span className="error-text">{errors.latitude}</span>}
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="longitude">Longitude *</label>
-        <input
-          id="longitude"
-          type="number"
-          step="0.000001"
-          value={longitude}
-          onChange={(e) => setLongitude(e.target.value)}
-          placeholder="Ex: -46.6333"
-          className={errors.longitude ? 'input-error' : ''}
-        />
-        {errors.longitude && <span className="error-text">{errors.longitude}</span>}
       </div>
 
       <div className="form-group">
@@ -194,7 +172,7 @@ const CityForm: React.FC<CityFormProps> = ({ city, onSuccess, onClose }) => {
           id="idPais"
           value={idPais}
           onChange={(e) => setIdPais(e.target.value)}
-          disabled={isLoadingCountries}
+          disabled={isLoadingCountries || isSubmitting}
           className={errors.idPais ? 'input-error' : ''}
         >
           <option value="">
@@ -210,7 +188,7 @@ const CityForm: React.FC<CityFormProps> = ({ city, onSuccess, onClose }) => {
       </div>
 
       <div className="form-actions">
-        <button type="submit" disabled={isSubmitting}>
+        <button type="submit" disabled={isSubmitting || isValidatingCity}>
           {isSubmitting ? 'Salvando...' : city ? 'Atualizar' : 'Criar'}
         </button>
         <button type="button" onClick={onClose} disabled={isSubmitting}>

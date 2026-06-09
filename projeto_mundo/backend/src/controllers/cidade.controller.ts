@@ -1,21 +1,13 @@
 import { Request, Response } from 'express';
 import * as cidadeService from '../services/cidade.service.js';
-
-function validateLatitude(latitude: any): boolean {
-  const lat = typeof latitude === 'string' ? parseFloat(latitude) : latitude;
-  return !isNaN(lat) && lat >= -90 && lat <= 90;
-}
-
-function validateLongitude(longitude: any): boolean {
-  const lon = typeof longitude === 'string' ? parseFloat(longitude) : longitude;
-  return !isNaN(lon) && lon >= -180 && lon <= 180;
-}
+import * as paisService from '../services/pais.service.js';
+import { fetchWeatherByCityName } from '../services/openWeather.service.js'; // Serviço isolado no backend
 
 export async function createCity(req: Request, res: Response) {
   try {
-    const { nome, populacao, latitude, longitude, idPais } = req.body;
+    // Agora o req.body recebe APENAS nome, populacao e idPais vindos do formulário
+    const { nome, populacao, idPais } = req.body;
 
-    // Validation
     if (!nome || nome.trim() === '') {
       return res.status(400).json({ error: 'Nome da cidade é obrigatório' });
     }
@@ -29,42 +21,34 @@ export async function createCity(req: Request, res: Response) {
       return res.status(400).json({ error: 'População deve ser um número não negativo' });
     }
 
-    if (latitude === undefined || latitude === null || latitude === '') {
-      return res.status(400).json({ error: 'Latitude é obrigatória' });
-    }
-
-    if (!validateLatitude(latitude)) {
-      return res.status(400).json({ error: 'Latitude deve estar entre -90 e 90' });
-    }
-
-    if (longitude === undefined || longitude === null || longitude === '') {
-      return res.status(400).json({ error: 'Longitude é obrigatória' });
-    }
-
-    if (!validateLongitude(longitude)) {
-      return res.status(400).json({ error: 'Longitude deve estar entre -180 e 180' });
-    }
-
     if (!idPais) {
       return res.status(400).json({ error: 'ID do país é obrigatório' });
     }
 
+    // 1. Validar se o país existe
+    const pais = await paisService.getCountryById(Number(idPais));
+    if (!pais) {
+      return res.status(400).json({ error: 'País não encontrado' });
+    }
+
+    // 2. Chamar a API externa pelo Backend para obter a Latitude, Longitude e a grafia correta
+    const dadosExternos = await fetchWeatherByCityName(nome);
+    if (!dadosExternos) {
+      return res.status(400).json({ 
+        error: 'Não foi possível obter a geolocalização e dados climáticos para esta cidade no OpenWeather.' 
+      });
+    }
+
+    // 3. Persistir no banco com os dados injetados automaticamente
     const result = await cidadeService.createCity({
-      nome,
+      nome: dadosExternos.cidade, // Salva o nome com a grafia oficial corrigida pela API
       populacao: pop,
-      latitude,
-      longitude,
+      latitude: dadosExternos.latitude,   // Injetado automaticamente
+      longitude: dadosExternos.longitude, // Injetado automaticamente
       idPais: Number(idPais),
     });
 
-    const responseData = {
-      ...result,
-      populacao: Number(result.populacao),
-      latitude: Number(result.latitude),
-      longitude: Number(result.longitude),
-    };
-
-    return res.status(201).json(responseData);
+    return res.status(201).json(result);
   } catch (error: any) {
     if (error.message === 'País não encontrado') {
       return res.status(400).json({ error: 'País não encontrado' });
@@ -87,15 +71,7 @@ export async function listCities(req: Request, res: Response) {
     }
 
     const result = await cidadeService.listCities(filters);
-
-    const responseData = result.map((c) => ({
-      ...c,
-      populacao: Number(c.populacao),
-      latitude: Number(c.latitude),
-      longitude: Number(c.longitude),
-    }));
-
-    return res.status(200).json(responseData);
+    return res.status(200).json(result);
   } catch (error: any) {
     console.error(error);
     return res.status(500).json({ error: 'Erro interno do servidor' });
@@ -110,15 +86,7 @@ export async function getCityById(req: Request, res: Response) {
     }
 
     const result = await cidadeService.getCityById(id);
-
-    const responseData = {
-      ...result,
-      populacao: Number(result.populacao),
-      latitude: Number(result.latitude),
-      longitude: Number(result.longitude),
-    };
-
-    return res.status(200).json(responseData);
+    return res.status(200).json(result);
   } catch (error: any) {
     if (error.message === 'Cidade não encontrada') {
       return res.status(404).json({ error: 'Cidade não encontrada' });
@@ -135,49 +103,39 @@ export async function updateCity(req: Request, res: Response) {
       return res.status(400).json({ error: 'ID inválido' });
     }
 
-    const { nome, populacao, latitude, longitude, idPais } = req.body;
+    const { nome, populacao, idPais } = req.body;
 
-    // Validation - only validate fields that are being updated
-    if (nome !== undefined && (nome === null || nome === '')) {
+    if (nome !== undefined && (nome === null || nome.trim() === '')) {
       return res.status(400).json({ error: 'Nome da cidade é obrigatório' });
     }
 
+    const updateData: any = {};
     if (populacao !== undefined && populacao !== null) {
       const pop = typeof populacao === 'string' ? parseInt(populacao, 10) : populacao;
       if (isNaN(pop) || pop < 0) {
         return res.status(400).json({ error: 'População deve ser um número não negativo' });
       }
+      updateData.populacao = pop;
     }
 
-    if (latitude !== undefined && latitude !== null) {
-      if (!validateLatitude(latitude)) {
-        return res.status(400).json({ error: 'Latitude deve estar entre -90 e 90' });
+    if (idPais !== undefined) updateData.idPais = Number(idPais);
+
+    // Se o utilizador atualizou o nome da cidade, recalculamos a lat/lon dinamicamente
+    if (nome) {
+      const dadosExternos = await fetchWeatherByCityName(nome);
+      if (dadosExternos) {
+        updateData.nome = dadosExternos.cidade;
+        updateData.latitude = dadosExternos.latitude;
+        updateData.longitude = dadosExternos.longitude;
+      } else {
+        return res.status(400).json({ 
+          error: 'Não foi possível atualizar a cidade pois o novo nome não retornou coordenadas válidas.' 
+        });
       }
     }
-
-    if (longitude !== undefined && longitude !== null) {
-      if (!validateLongitude(longitude)) {
-        return res.status(400).json({ error: 'Longitude deve estar entre -180 e 180' });
-      }
-    }
-
-    const updateData: any = {};
-    if (nome !== undefined) updateData.nome = nome;
-    if (populacao !== undefined) updateData.populacao = populacao;
-    if (latitude !== undefined) updateData.latitude = latitude;
-    if (longitude !== undefined) updateData.longitude = longitude;
-    if (idPais !== undefined) updateData.idPais = idPais;
 
     const result = await cidadeService.updateCity(id, updateData);
-
-    const responseData = {
-      ...result,
-      populacao: Number(result.populacao),
-      latitude: Number(result.latitude),
-      longitude: Number(result.longitude),
-    };
-
-    return res.status(200).json(responseData);
+    return res.status(200).json(result);
   } catch (error: any) {
     if (error.message === 'Cidade não encontrada') {
       return res.status(404).json({ error: 'Cidade não encontrada' });
@@ -190,6 +148,35 @@ export async function updateCity(req: Request, res: Response) {
   }
 }
 
+export async function validateCity(req: Request, res: Response) {
+  try {
+    const { nome } = req.query;
+
+    if (!nome || typeof nome !== 'string' || nome.trim() === '') {
+      return res.status(400).json({ error: 'Nome da cidade é obrigatório' });
+    }
+
+    // Chama o serviço OpenWeather para validar e obter a grafia corrigida
+    const dadosExternos = await fetchWeatherByCityName(nome);
+    if (!dadosExternos) {
+      return res.status(404).json({ 
+        error: 'Cidade não encontrada na API OpenWeather.' 
+      });
+    }
+
+    return res.status(200).json({
+      cidade: dadosExternos.cidade,
+      latitude: dadosExternos.latitude,
+      longitude: dadosExternos.longitude,
+      temperatura: dadosExternos.temperatura,
+      descricao: dadosExternos.descricao
+    });
+  } catch (error: any) {
+    console.error(error);
+    return res.status(500).json({ error: 'Erro ao validar cidade' });
+  }
+}
+
 export async function deleteCity(req: Request, res: Response) {
   try {
     const id = parseInt(req.params.id, 10);
@@ -198,7 +185,6 @@ export async function deleteCity(req: Request, res: Response) {
     }
 
     await cidadeService.deleteCity(id);
-
     return res.status(204).send();
   } catch (error: any) {
     if (error.message === 'Cidade não encontrada') {

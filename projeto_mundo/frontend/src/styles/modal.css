@@ -1,3 +1,4 @@
+/* modal.css */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -14,7 +15,7 @@
 }
 
 .modal-container {
-  background: #131c2e; /* Corrigido para o tom escuro do GeoAdmin */
+  background: #131c2e;
   width: 100%;
   max-width: 460px;
   border-radius: 14px;
@@ -25,18 +26,101 @@
 }
 
 .modal-header {
-  padding: 24px 24px 16px 24px;
+  padding: 20px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.modal-header h2 {
-  font-size: 20px;
+.modal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.modal-flag {
+  height: 36px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.modal-flag-placeholder {
+  width: 48px;
+  height: 36px;
+  background: #1a2436;
+  border-radius: 6px;
+}
+
+.modal-header-titles h2 {
+  margin: 0;
+  font-size: 22px;
   font-weight: 700;
   color: #f8fafc;
-  margin: 0;
+}
+
+.modal-header-titles p {
+  margin: 2px 0 0 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.modal-badges {
+  display: flex;
+  gap: 8px;
+  margin-left: 12px;
+}
+
+.badge-blue {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-green {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Navegação por Abas */
+.modal-tabs-nav {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0 24px;
+  background: #111927;
+}
+
+.modal-tab-trigger {
+  padding: 14px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.modal-tab-trigger.active-sistema {
+  border-bottom-color: #10b981;
+  color: #10b981;
+}
+
+.modal-tab-trigger.active-externo {
+  border-bottom-color: #f59e0b;
+  color: #f59e0b;
 }
 
 .modal-close-btn {
@@ -59,117 +143,264 @@
   padding: 24px;
 }
 
-/* Formulários e Inputs do Modal */
-.modal-content form {
+.modal-container.lg .modal-content {
+  flex: 1;
+  overflow-y: auto;
+  background: #131c2e;
+}
+
+/* Loading */
+.modal-loading-container {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.modal-loading-text {
+  margin-top: 15px;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+/* Grid de Informações do Sistema */
+.grid-2x2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 }
 
-.form-group {
+.info-card {
+  background: #1a2436;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.info-card-label {
+  font-size: 11px;
+  color: #94a3b8;
+  margin: 0 0 6px 0;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.info-card-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.info-card-value.highlight {
+  color: #10b981;
+}
+
+/* Layout Polido da Aba de APIs */
+.external-layout {
   display: flex;
   flex-direction: column;
+  gap: 24px;
+}
+
+.external-row-top {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 20px;
+}
+
+.api-card {
+  background: #1a2436;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.api-card.weather-flex {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.card-title-api {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
   gap: 8px;
 }
 
-.form-group label {
-  color: #94a3b8;
-  font-size: 14px;
-  font-weight: 500;
-}
+.card-title-api.rest { color: #f59e0b; }
+.card-title-api.weather { color: #3b82f6; margin-bottom: 12px; }
+.card-title-api.news { color: #a855f7; }
 
-.form-group input, 
-.form-group select {
-  background: #1a2436;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 12px 14px;
-  border-radius: 8px;
-  color: #f8fafc;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.form-group input:focus, 
-.form-group select:focus {
-  border-color: #3b82f6;
-}
-
-.form-group input::placeholder {
-  color: #475569;
-}
-
-/* Correção para o elemento Select nativo */
-.form-group select {
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  background-size: 16px;
-  padding-right: 40px;
-}
-
-/* Grupo de botões inferior estruturado */
-.form-actions {
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: flex-start;
+.api-grid-data {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
-  margin-top: 12px;
 }
 
-.btn-save, 
-.modal-content button[type="submit"] {
-  padding: 10px 20px;
-  background: #10b981;
-  border: none;
-  color: #0b111e;
-  border-radius: 8px;
-  font-weight: 600;
+.api-data-span-2 {
+  grid-column: span 2;
+}
+
+.api-data-item span {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.api-data-item p {
+  margin: 2px 0 0 0;
   font-size: 14px;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.btn-cancel, 
-.modal-content button[type="button"] {
-  padding: 10px 20px;
-  background: #1a2436;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  color: #94a3b8;
-  border-radius: 8px;
+  color: #f8fafc;
   font-weight: 500;
-  font-size: 14px;
-  cursor: pointer;
+}
+
+/* Clima */
+.weather-city {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0 0 4px 0;
+}
+
+.weather-info-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.weather-icon {
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 50%;
+}
+
+.weather-temp {
+  font-size: 28px;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.weather-desc {
+  font-size: 13px;
+  color: #3b82f6;
+  margin: 4px 0 0 0;
+  text-transform: capitalize;
+}
+
+.weather-unavailable {
+  font-size: 13px;
+  color: #64748b;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Seção de Notícias */
+.news-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.news-item-link {
+  text-decoration: none;
+  display: block;
+  padding: 10px;
+  border-radius: 6px;
+  background: #131c2e;
+  border: 1px solid rgba(255, 255, 255, 0.02);
   transition: background 0.2s;
 }
 
-.btn-save:hover, 
-.modal-content button[type="submit"]:hover {
-  opacity: 0.9;
+.news-item-link:hover {
+  background: #1a2436;
 }
 
-.btn-cancel:hover, 
-.modal-content button[type="button"]:hover {
-  background: #24324a;
+.news-title {
+  margin: 0;
+  font-size: 13px;
   color: #f8fafc;
+  font-weight: 600;
+  line-height: 1.4;
 }
+
+.news-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.news-source {
+  color: #a855f7;
+}
+
+.news-date {
+  margin-left: auto;
+}
+
+.news-unavailable {
+  font-size: 13px;
+  color: #64748b;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Controles de Navegação */
+.modal-footer-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: #111927;
+}
+
+.btn-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.btn-nav:disabled {
+  background-color: #1e293b;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.btn-nav:not(:disabled) {
+  background-color: #10b981;
+  color: #0b111e;
+  cursor: pointer;
+}
+
+.nav-counter {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Scrollbar personalizada */
+.modal-container.lg .modal-content::-webkit-scrollbar { width: 8px; }
+.modal-container.lg .modal-content::-webkit-scrollbar-track { background: transparent; }
+.modal-container.lg .modal-content::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+.modal-container.lg .modal-content::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
 /* Animações */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-@keyframes slideUp {
-  from { 
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to { 
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* Tamanhos do Modal */
+.modal-container.sm { max-width: 320px; }
+.modal-container.md { max-width: 460px; }
+.modal-container.lg { max-width: 900px; height: 85vh; display: flex; flex-direction: column; }

@@ -34,7 +34,7 @@ model Continente {
 model Pais {
   id             Int      @id @default(autoincrement())
   nome           String   @unique @db.VarChar(100)
-  populacao      BigInt
+  populacao      Int
   idiomaOficial  String   @db.VarChar(100) @map("idioma_oficial")
   moeda          String   @db.VarChar(50)
   idContinente   Int      @map("id_continente")
@@ -51,7 +51,7 @@ model Pais {
 model Cidade {
   id           Int      @id @default(autoincrement())
   nome         String   @db.VarChar(100)
-  populacao    BigInt
+  populacao    Int
   latitude     Decimal  @db.Decimal(9, 6)
   longitude    Decimal  @db.Decimal(9, 6)
   idPais       Int      @map("id_pais")
