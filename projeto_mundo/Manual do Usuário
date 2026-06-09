@@ -61,22 +61,18 @@ Caminho: `projeto_mundo/backend/.env`
 
 Conteúdo mínimo recomendado:
 
-DATABASE_URL="postgres://USER:PASS@HOST:PORT/NOME_DB"
-PORT=3001
-JWT_SECRET="mude_para_uma_string_segura"
-NODE_ENV=development
+DATABASE_URL=postgresql://Usuariodobancodedados:senhadobancodedados@localhost:5432/nome_do_projeto
+OPENWEATHER_KEY='Sua chave do OpenWeather'
 
 Observações:
 - `DATABASE_URL` é obrigatória: `prisma.config.ts` e Prisma dependem dessa variável.
 - `PORT` é opcional; se não definido, o backend usa `3001`.
-- `JWT_SECRET` é necessário se o backend usa JWT para autenticação (verifique os arquivos em `src`).
 
-### Frontend (opcional, para facilitar desenvolvimento local)
+### Frontend
 Caminho: `projeto_mundo/frontend/.env`
 
-Vite só expõe variáveis que começam com `VITE_` ao navegador. Exemplo:
-
-VITE_API_URL="http://localhost:3001/api"
+VITE_OPENWEATHER_KEY=Chave do OpenWeather
+VITE_NEWSAPI_KEY=Chave do news api
 
 Ajuste conforme necessário se o frontend usar outra variável.
 
@@ -165,48 +161,3 @@ Para detalhes de payloads e respostas, consulte os arquivos em `backend/src/rout
   curl "http://localhost:3001/api/cities/validate?name=Lisbon"
 
 ---
-
-## 12. Problemas comuns e soluções rápidas
-
-- Erro de conexão com Postgres:
-  - Verifique `DATABASE_URL` (formato: `postgres://USER:PASS@HOST:PORT/DB`).
-  - Confirme que o banco aceita conexões remotas e que firewall/host não bloqueia.
-- Porta em uso:
-  - Ajuste `PORT` no `.env` ou encerre o processo que usa a porta.
-- CORS bloqueando frontend:
-  - `server.ts` permite `http://localhost:5173` por padrão; se usar outro host, ajuste o CORS ou `origin`.
-- Migrações Prisma:
-  - Em dev, use `npx prisma migrate dev`.
-
----
-
-## 13. Boas práticas de segurança
-
-- Nunca comite arquivos `.env` com credenciais reais. Adicione `.env` a `.gitignore`.
-- Use secrets do provedor de hospedagem quando fizer deploy (Vercel, Railway, etc.).
-- Use `JWT_SECRET` forte e altere senhas padrão.
-
----
-
-## 14. Sugestão: arquivo .env.example
-
-Inclua no repositório um arquivo `backend/.env.example` com o conteúdo a seguir (não conterá credenciais reais):
-
-DATABASE_URL="postgres://USER:PASS@HOST:PORT/NOME_DB"
-PORT=3001
-JWT_SECRET="mude_para_uma_string_segura"
-NODE_ENV=development
-
-E para o frontend: `frontend/.env.example`:
-
-VITE_API_URL="http://localhost:3001/api"
-
----
-
-## 15. Onde olhar no código
-
-- `projeto_mundo/backend/src` — rotas, controllers, serviços e seed.
-- `projeto_mundo/backend/prisma.config.ts` — mostra que `DATABASE_URL` é necessária.
-- `projeto_mundo/frontend/src` — código do app React (verifique uso de `VITE_API_URL`).
-
-Obrigado — qualquer ajuste que você deseje faço agora mesmo.
