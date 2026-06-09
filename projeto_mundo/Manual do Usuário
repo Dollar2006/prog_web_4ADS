@@ -1,1 +1,221 @@
+# Manual do Usuário — Projeto Mundo
 
+Este documento explica, de forma simples e passo a passo, como instalar, configurar e executar localmente o sistema "Projeto Mundo" (frontend + backend).
+
+---
+
+## 1. Requisitos
+
+- Git (para clonar o repositório).
+- Node.js (recomendo v18+). npm vem junto.
+- PostgreSQL (local ou serviço hospedado: ElephantSQL, Supabase, Railway, etc.).
+- npx (vem com npm).
+- Navegador moderno (Chrome, Firefox, Edge).
+- Editor de texto (opcional) para editar arquivos `.env`.
+
+---
+
+## 2. Clonar o repositório
+
+1. Abra um terminal e execute:
+
+   git clone https://github.com/Dollar2006/prog_web_4ADS.git
+   cd prog_web_4ADS/projeto_mundo
+
+---
+
+## 3. Visão geral da estrutura
+
+- projeto_mundo/backend — backend em TypeScript (Express, Prisma, PostgreSQL).
+  - Scripts importantes (package.json):
+    - `npm run dev` — inicia backend em modo dev (`tsx src/server.ts`).
+    - `npm run build` — compila TypeScript.
+    - `npm run start` — inicia build compilado (`node dist/server.js`).
+    - `npm run prisma` — comando Prisma.
+  - Arquivos observados:
+    - `src/server.ts` — configura servidor, rotas, seed de usuários e verificação de DB.
+    - `prisma.config.ts` — lê `process.env["DATABASE_URL"]`.
+
+- projeto_mundo/frontend — frontend com Vite + React.
+  - Scripts importantes (package.json):
+    - `npm run dev` — inicia Vite (padrão: http://localhost:5173).
+    - `npm run build` — build de produção.
+  - O backend está configurado para permitir CORS da origem `http://localhost:5173`.
+
+---
+
+## 4. Serviços / Contas que você pode precisar criar
+
+- Conta GitHub (opcional, se for dar fork ou contribuir).
+- Conta em um serviço de Postgres (opcional se usar Postgres local): ElephantSQL, Supabase, Railway, etc.
+- Plataforma de deploy (opcional): Vercel, Netlify, Railway, Render.
+
+---
+
+## 5. Arquivos .env necessários
+
+Crie os arquivos `.env` nas pastas backend e (opcionalmente) frontend:
+
+### Backend (obrigatório)
+Caminho: `projeto_mundo/backend/.env`
+
+Conteúdo mínimo recomendado:
+
+DATABASE_URL="postgres://USER:PASS@HOST:PORT/NOME_DB"
+PORT=3001
+JWT_SECRET="mude_para_uma_string_segura"
+NODE_ENV=development
+
+Observações:
+- `DATABASE_URL` é obrigatória: `prisma.config.ts` e Prisma dependem dessa variável.
+- `PORT` é opcional; se não definido, o backend usa `3001`.
+- `JWT_SECRET` é necessário se o backend usa JWT para autenticação (verifique os arquivos em `src`).
+
+### Frontend (opcional, para facilitar desenvolvimento local)
+Caminho: `projeto_mundo/frontend/.env`
+
+Vite só expõe variáveis que começam com `VITE_` ao navegador. Exemplo:
+
+VITE_API_URL="http://localhost:3001/api"
+
+Ajuste conforme necessário se o frontend usar outra variável.
+
+---
+
+## 6. Preparar banco de dados e Prisma
+
+1. No diretório `projeto_mundo/backend` crie `.env` com `DATABASE_URL` apontando para seu PostgreSQL.
+2. Instale dependências:
+   npm install
+3. Gere o client Prisma:
+   npx prisma generate
+4. Crie/aplique migrações (em dev):
+   npx prisma migrate dev --name init
+   (Em produção: `npx prisma migrate deploy`)
+
+Nota: se estiver em desenvolvimento e quiser resetar o banco (remover dados), use com cuidado:
+   npx prisma migrate reset
+
+---
+
+## 7. Seed de usuários padrão
+
+O backend chama `seedDefaultUsers()` ao iniciar (veja `src/server.ts`), então ao iniciar em dev ele tentará criar usuários padrão automaticamente. Se precisar ver ou alterar os dados padrão, abra `backend/src/lib/seed.js` (ou `.ts`).
+
+---
+
+## 8. Executando em desenvolvimento
+
+### Backend
+
+1. cd projeto_mundo/backend
+2. npm install
+3. Verifique que `backend/.env` existe e está correto.
+4. npm run dev
+
+O console deve mostrar mensagens como:
+- "✓ Conectado ao banco de dados"
+- "✓ Server is running on http://localhost:3001"
+
+### Frontend
+
+1. cd projeto_mundo/frontend
+2. npm install
+3. (opcional) crie `frontend/.env` com `VITE_API_URL=http://localhost:3001/api`
+4. npm run dev
+
+Abra o navegador em http://localhost:5173
+
+---
+
+## 9. Executando em produção (build)
+
+### Backend
+
+1. cd projeto_mundo/backend
+2. npm run build
+3. Configure as variáveis de ambiente no provedor (DATABASE_URL, JWT_SECRET etc.)
+4. npm run start
+
+### Frontend
+
+1. cd projeto_mundo/frontend
+2. npm run build
+3. Publique os arquivos estáticos em seu host (Vercel/Netlify/serviço estático) ou use `npm run preview` para testar localmente.
+
+---
+
+## 10. Endpoints úteis (conforme `server.ts`)
+
+- GET /api/status — rota de teste (retorna JSON com status).
+- GET /health — health check (200 + `{ status: 'healthy' }`).
+- GET /api/cities/validate — rota pública para validação de cidade (sem autenticação).
+- Rotas com prefixos: `/api/auth`, `/api/continents`, `/api/countries`, `/api/cities`.
+
+Para detalhes de payloads e respostas, consulte os arquivos em `backend/src/routes` e `backend/src/controllers`.
+
+---
+
+## 11. Testando com curl (exemplos)
+
+- Teste status:
+  curl http://localhost:3001/api/status
+
+- Teste validação de cidade (adapte query conforme controller):
+  curl "http://localhost:3001/api/cities/validate?name=Lisbon"
+
+---
+
+## 12. Problemas comuns e soluções rápidas
+
+- Erro de conexão com Postgres:
+  - Verifique `DATABASE_URL` (formato: `postgres://USER:PASS@HOST:PORT/DB`).
+  - Confirme que o banco aceita conexões remotas e que firewall/host não bloqueia.
+- Porta em uso:
+  - Ajuste `PORT` no `.env` ou encerre o processo que usa a porta.
+- CORS bloqueando frontend:
+  - `server.ts` permite `http://localhost:5173` por padrão; se usar outro host, ajuste o CORS ou `origin`.
+- Migrações Prisma:
+  - Em dev, use `npx prisma migrate dev`.
+
+---
+
+## 13. Boas práticas de segurança
+
+- Nunca comite arquivos `.env` com credenciais reais. Adicione `.env` a `.gitignore`.
+- Use secrets do provedor de hospedagem quando fizer deploy (Vercel, Railway, etc.).
+- Use `JWT_SECRET` forte e altere senhas padrão.
+
+---
+
+## 14. Sugestão: arquivo .env.example
+
+Inclua no repositório um arquivo `backend/.env.example` com o conteúdo a seguir (não conterá credenciais reais):
+
+DATABASE_URL="postgres://USER:PASS@HOST:PORT/NOME_DB"
+PORT=3001
+JWT_SECRET="mude_para_uma_string_segura"
+NODE_ENV=development
+
+E para o frontend: `frontend/.env.example`:
+
+VITE_API_URL="http://localhost:3001/api"
+
+---
+
+## 15. Onde olhar no código
+
+- `projeto_mundo/backend/src` — rotas, controllers, serviços e seed.
+- `projeto_mundo/backend/prisma.config.ts` — mostra que `DATABASE_URL` é necessária.
+- `projeto_mundo/frontend/src` — código do app React (verifique uso de `VITE_API_URL`).
+
+---
+
+Se quiser, eu posso:
+- Adicionar automaticamente `backend/.env.example` e `frontend/.env.example` ao repositório.
+- Gerar instruções passo a passo para criar um banco no Supabase/ElephantSQL.
+- Extrair os nomes exatos de todas as variáveis de ambiente usadas no backend (fazendo busca por `process.env` no código) e incluir no manual.
+
+---
+
+Obrigado — qualquer ajuste que você deseje faço agora mesmo.
