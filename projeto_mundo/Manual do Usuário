@@ -209,13 +209,4 @@ VITE_API_URL="http://localhost:3001/api"
 - `projeto_mundo/backend/prisma.config.ts` — mostra que `DATABASE_URL` é necessária.
 - `projeto_mundo/frontend/src` — código do app React (verifique uso de `VITE_API_URL`).
 
----
-
-Se quiser, eu posso:
-- Adicionar automaticamente `backend/.env.example` e `frontend/.env.example` ao repositório.
-- Gerar instruções passo a passo para criar um banco no Supabase/ElephantSQL.
-- Extrair os nomes exatos de todas as variáveis de ambiente usadas no backend (fazendo busca por `process.env` no código) e incluir no manual.
-
----
-
 Obrigado — qualquer ajuste que você deseje faço agora mesmo.
